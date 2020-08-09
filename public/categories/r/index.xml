@@ -14,10 +14,10 @@
     
     <item>
       <title>TidyTuesday: Palmer Penguins</title>
-      <link>/post/tidytuesday-palmer-penguins/</link>
+      <link>/posts/tidytuesday-palmer-penguins/</link>
       <pubDate>Sun, 09 Aug 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/tidytuesday-palmer-penguins/</guid>
+      <guid>/posts/tidytuesday-palmer-penguins/</guid>
       <description>TidyTuesday: Palmer PenguinsHow bill length (mm) varies by penguine species and sex?
 penguins.csv %&amp;gt;% ggplot() +geom_boxplot(aes(x = species,y = bill_length_mm,fill = sex))</description>
     </item>

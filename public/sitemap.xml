@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/about/</loc>
+    <lastmod>2020-08-09T17:51:42+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/categories/</loc>
     <lastmod>2020-08-09T00:00:00+00:00</lastmod>
   </url>
@@ -18,7 +23,7 @@
   </url>
   
   <url>
-    <loc>/post/</loc>
+    <loc>/posts/</loc>
     <lastmod>2020-08-09T00:00:00+00:00</lastmod>
   </url>
   
@@ -43,7 +48,7 @@
   </url>
   
   <url>
-    <loc>/post/tidytuesday-palmer-penguins/</loc>
+    <loc>/posts/tidytuesday-palmer-penguins/</loc>
     <lastmod>2020-08-09T00:00:00+00:00</lastmod>
   </url>
   
