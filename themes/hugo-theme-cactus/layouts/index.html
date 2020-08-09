@@ -34,7 +34,7 @@
 
   <section id="writing">
     <!-- TODO: use built in mainSections parameter https://gohugo.io/functions/where/#mainsections -->
-    <span class="h1"><a href="{{ .Site.Params.mainSection | absURL }}">Writings</a></span>
+    <span class="h1"><a href="{{ .Site.Params.mainSection | absURL }}">Articles</a></span>
     {{ if (and (and (isset .Site.Params "tagsoverview") (eq .Site.Params.tagsOverview true)) (gt (len .Site.Taxonomies.tags) 0)) }}
     <span class="h2">Topics</span>
     <span class="widget tagcloud">
@@ -81,6 +81,7 @@
     {{ end }}
   </section>
 
+
   {{ $showProjectsList := false }}
   {{ if .Site.Data.projects }}
     {{ $showProjectsList = true }}
@@ -92,7 +93,8 @@
     {{ if isset .Site.Params "projectsUrl" }}
       {{ $projectsUrl = .Site.Params.projectsUrl }}
     {{ end }}
-  <section id="projects">
+
+ <section id="projects">
     <span class="h1"><a href="{{ $projectsUrl }}">Projects</a></span>
     <ul class="project-list">
         {{ range .Site.Data.projects.list }}
