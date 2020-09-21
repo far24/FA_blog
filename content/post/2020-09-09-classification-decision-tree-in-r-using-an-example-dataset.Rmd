@@ -13,6 +13,8 @@ tags:
   - decision tree
   - classification
 draft: yes
+editor_options: 
+  chunk_output_type: console
 ---
 
 # ML Classification Problem in R: Decision Tree
@@ -32,7 +34,10 @@ knitr::opts_chunk$set(echo = TRUE,
 ### R Libraries used in Analysis
 
 ```{r}
+library(here)
+library(janitor)
 library(rpart)
+library(rpart.plot)
 library(ggplot2)
 library(skimr)
 library(tidyverse)
@@ -54,23 +59,162 @@ The aim of this blog post is to learn:
 ### Data Source
 
 ```{r}
-penguins.csv <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-28/penguins.csv')
+golf <- readr::read_csv(here("data", "decision_tree_categorical.csv")) %>% 
+  mutate_if(is.character, factor)
 ```
 
 ### Explore the data
 
 ```{r}
-skim(penguins.csv)
+skim(golf)
 ```
 
-The penguin dataset provides observation of 344 penguins and their characteristics . In the dataset, characteristics of three species of penguin are recorded over three years (i.e., 2007, 2008, and 2009).  The characteristic of penguin includes sex, island where it lives, bill length, bill depth, flipper length, and body mass.
 
 
 ## Big Question
 
-Can you predict the penguin species using the features in the dataset?
+Can you predict the weather conditions suitable to play golf for an individual?
 
 ## Methodology
+
+The  [CART (i.e., Classification and Regression Tress) algorithm](#cart) is used for Binary Decision tree.  The 'rpart' package implements this algorithm to grow the tree.  The step-by-step procedure for the algorithm with the example data is presented here:
+
+**Step 1:**  Find each features's (i.e., predictor's ) best split.  For each feature with K different values there exist K-1 possible splits. Find the split, which maximizes the splitting criterion. The resulting set of splits contains best splits (one for each feature)
+
+Example:  Let us consider the "outlook" predictor in the dataset.  This predictor contains three ($K= 3$) different values (i.e., overcast, rain, and sunny).  So, the number of possible splits is $(K-1) = 3-1 =2$.  Now, first filter is performed on the data for sunny outlook (read weather) condition and look at the number of times the decision for playing golf is "yes" vs. "no".  The result indicates that when the outlook is sunny (observations = 5), golf was played 2 times (yes = 2) and not played for 3 times (no = 3). 
+
+```{r}
+# filter outlook for sunny and tally decision
+golf %>% filter(outlook == "sunny") %>% tabyl(decision)
+```
+
+Similarly, the number of times golf is played when it was rain (obs = 5) is 3. 
+
+```{r}
+# filter outlook for rain and tally decision
+golf %>% filter(outlook == "rain") %>% tabyl(decision)
+```
+
+And, when the outlook is overcast, golf is played number of times.
+
+```{r}
+# filter outlook for overcast and tally decision
+golf %>% filter(outlook == "overcast") %>% tabyl(decision)
+```
+
+
+Now, similar procedure is performed for all the variables.  The results for split of all the are shown below:
+
+Variable: Temperature 
+
+```{r}
+golf %>% tabyl(temp, decision)
+```
+Variable: humidity 
+
+```{r}
+golf %>% tabyl(humidity, decision)
+```
+
+Variable: wind 
+
+```{r}
+golf %>% tabyl(wind, decision)
+```
+
+
+
+
+
+**Step 2:** Find the node’s best split. Among the best splits from Step i find the one, which maximizes the splitting criterion.
+
+Example:
+This step is focused on finding the predictor variable that is the best for splitting the data at a node. To find the "best" splitting criteria, the impurity concept is used. A leaf node is pure, if it contains 100% of the same decision. In this example, if a leaf node presents the 100% "yes" or "no" decision for playing golf, that would be a pure node. In other case, it would be a "impure" node. To sum up, after splitting at a predictor variable, if a decision node contains mixture of response variable, then the node would be impure.
+
+The aim of this step is to measure the impurity and compare them. How to measure impurity?
+Following table provides a brief overview of the algorithm and the impurity measurement it uses. 
+
+
+| Algorithm | Impurity Measurement | Year | Author         |
+|-----------|----------------------|------|----------------|
+| CHAID     | Chi-sq               | 1980 | Gordon V. Kass |
+| CART      | Gini Impurity        | 1984 |                |
+| ID3       | Information Gain     | 1986 |                |
+| C4.5      | Gain Ratio           | 1993 |                |
+
+
+Since, the CART uses gini impurity, the equation for its calculation is as follows:
+
+$G_k = 1 - \sum_{i=1}^{c} p(i)^2$
+
+Here,
+$G_k =$ gini impurity of a class of predictor variable, $k = 1,...,m$
+$i =$ class i fo the response variable $c = 1,...,n$
+$p(i)$ = probability of class i of reponse variable for a predictor
+
+Using this formula for to find the outlook predictor variable. When the outlook is overcast the gini is:
+$G_{overcast}= 1 -  (probability: decision = "yes")^2 - (probability: decision = "No")^2$
+$G_{overcast}= 1 -  (\frac{4}{4+0})^2 - (\frac{0}{4+0})^2 = 1$
+
+Similarly, When the outlook is overcast the rain is:
+$G_{rain}= 1 -  (\frac{3}{3+2})^2 - (\frac{2}{3+2})^2 = 0.48$
+
+and for outlook when it is sunny, the gini is:
+$G_{sunny}= 1 -  (\frac{2}{2+3})^2 - (\frac{3}{2+3})^2 = 0.48$
+
+
+Now, the gini impurity of the node is calculated when splitting on outlook variable is performed. All the gini impurity for each class of predictor variable is summed up to get gini impurity of the node for that predictor variable.  Since, the number of observations are not equal for splits on outlook variable, the weighted average of gini impurity is used. For example, gini impurity of the node if splitted for outlook variable would be:
+
+$G_{outlook}= \frac{4}{4+5+5} * G_{overcast} + \frac{5}{4+5+5} * G_{rain} + \frac{5}{4+5+5} * G_{sunny}$
+$G_{outlook}= \frac{4}{4+5+5} * 1 + \frac{5}{4+5+5} * 0.48 + \frac{5}{4+5+5} * 0.48$
+$G_{outlook}= 0.286 + 0.171 + 0.171$
+$G_{outlook}= 0.628$
+
+
+Similarly, for all the other predictor variables the gini impurity is:
+
+| predictor | Gini impurity |
+|-----------|---------------|
+| outlook   | 0.628         |
+| temp      | 0.440         |
+| humidity  | **0.366**     |
+| wind      | 0.428         |
+
+This table provides the nodes best split from the available predictor variable. The minimum gini impurity is found for the humidity variable. It implies that, if the dataset is splitted on humidity variable minimum mixture of response variable (i.e., whether to play golf or not) is acheived. 
+
+**Step 3:** Split the node using best node split from Step 2 and repeat from Step 1 until stopping criterion is satisfied. 
+
+Example:
+This step indicates how to find the leaf nodes. If the leaf has the lowest score, then there is no point of splitting the data or if the splitting does not improve the impurity, the algorithm stops.
+
+**Visualization**
+
+Using the rpart package, the decision tree for this dataset is developed. The following figure illustrates the tree. As shown, the first split is performed on the humidity variable.
+
+
+```{r}
+set.seed(9212020)
+# prepare the data for rpart 
+dt_golf <- recipe(decision ~ . , data = golf %>% select(-day)) %>%
+  step_dummy(all_nominal(), -all_outcomes()) %>% 
+  prep()
+
+dt_golf_cat <- golf %>% select(-day)
+
+
+# fit the decision tree. Since the observation is low, the minsplit is et to 4
+dt_golf_tree <- rpart(decision ~ ., data = y, control = rpart.control(minsplit = 4))
+dt_golf_tree_cat <- rpart(decision ~ ., data = dt_golf_cat , control = rpart.control(minsplit = 4))  
+# vizualize the decision tree
+rpart.plot(dt_golf_tree)
+rpart.plot(dt_golf_tree_cat)
+```
+
+NOTE:: if you do not create dummy variables, it seems rpart provides different answer than expected.
+
+
+
+## CASE STUDY: Decision Tree using Tidymodels in R
 
 ### Build models
 
@@ -104,10 +248,9 @@ penguin_test <- testing(penguin_split)
 
 
 ## References
-```{r}
-citation("palmerpenguins")
-```
 
+<a name="cart">Breiman, L., Friedman, J.H., Olshen, R., and Stone, C.J., 1984. Classification and Regression
+Tree Wadsworth & Brooks/Cole Advanced Books & Software, Pacific California.</a>
 
 
 
