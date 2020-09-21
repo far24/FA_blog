@@ -1,0 +1,164 @@
+---
+title: 'R webscape '
+author: Fahim Ahmed
+date: '2020-08-13'
+slug: r-webscape
+categories:
+  - R
+  - data collection
+  - webscape
+tags:
+  - R
+  - rvest
+  - httr
+  - xml2
+draft: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+# R webscape
+
+
+## Approach
+
+The approach of this tutorial is to learn by working with an example. So, different types of websites are presented that would be used to extract information.  The type of website refers to the technology it uses. For example, html+css only, html+css+javascript, interaction with a website to get the data etc.
+
+
+## Assumption
+
+A few assumption is made while you follow along the tutorial:
+
++ you know basics of HTML code
++ you know basics of XML code
++ you know how to use Google Chrome Developer
+
+## Webscrape using R packages
+
++ [billboard the hot 100](https://www.billboard.com/charts/hot-100)
+
+
+
+## Step-by-Step actions
+
+
+### Load Libraries
+
+```{r}
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE)
+```
+
+
+
+```{r load packages}
+library(rvest)
+library(dplyr)
+```
+
+### Parse the Website
+
+```{r}
+# get the page address
+wbpage <- "https://www.skysports.com/premier-league-table/2019"
+
+# read the html page
+wbpage_read_html <- read_html(wbpage)
+
+```
+
+
+```{r}
+untidy_data <-
+  wbpage_read_html %>% 
+  rvest::html_nodes('div') %>% 
+  xml2::xml_find_all("//td[contains(@class,'standing-table__cell')]") %>% 
+  rvest::html_text()
+```
+
+```{r}
+table_dt <- cbind.data.frame(split(untidy_data, rep(1:11)), stringsAsFactors=F)[1:10]
+
+column_names <- c("rank", "team_name", "played", "win", "draw", "lost", "scored", "conceded", "goal_diff", "points")
+
+colnames(table_dt) <- column_names
+
+#
+table_dt <- 
+  table_dt %>%  
+  hablar::retype() %>%
+  mutate(across(where(is.character), stringr::str_trim)) %>% 
+  mutate(season = 2019)
+```
+
+
+```{r}
+
+get_epl_data <- function(seasons) {
+  for (year in seasons) {
+    print(year)
+    
+    wbpage <-
+      paste0("https://www.skysports.com/premier-league-table/", year) # get webpage address
+    
+    print(wbpage)
+    untidy_data <-
+      read_html(wbpage) %>% # read html
+      rvest::html_nodes('div') %>% # node extraction
+      xml2::xml_find_all("//td[contains(@class,'standing-table__cell')]") %>% # manual entry
+      rvest::html_text()
+    
+    table_dt <-
+      cbind.data.frame(split(untidy_data, rep(1:11)), stringsAsFactors = F)[1:10]
+    column_names <-
+      c(
+        "rank",
+        "team_name",
+        "played",
+        "win",
+        "draw",
+        "lost",
+        "scored",
+        "conceded",
+        "goal_diff",
+        "points"
+      )
+    
+    colnames(table_dt) <- column_names
+    
+    #
+    table_dt <-
+      table_dt %>%
+      hablar::retype() %>%
+      mutate(across(where(is.character), stringr::str_trim)) %>%
+      mutate(season = year)
+    
+    if (year == seasons[1]) {
+      dt_yr_1 <- table_dt
+      
+      if(length(seasons) == 1) {
+        return(dt_yr_1)
+      }
+    }
+    else{
+      if(length(seasons) == 2) {
+      table_dt_full <- rbind(dt_yr_1, table_dt)
+      }
+      else{
+      table_dt_full <- rbind(dt_full, table_dt)
+      }
+      }
+    
+  }
+  return(table_dt_full)
+
+  
+}
+```
+
+```{r}
+
+dt <- get_epl_data(seasons = c(2015:2019))
+
+```
+ 
