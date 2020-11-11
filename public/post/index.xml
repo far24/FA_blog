@@ -7,14 +7,24 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>@FA</copyright>
-    <lastBuildDate>Wed, 09 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 13 Aug 2020 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Soccer Analytics Resources</title>
-      <link>/post/soccer-analytics-resources/</link>
-      <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
+      <title>R webscape </title>
+      <link>/post/r-webscape/</link>
+      <pubDate>Thu, 13 Aug 2020 00:00:00 +0000</pubDate>
       
-      <guid>/post/soccer-analytics-resources/</guid>
-      <description>People to follow Data Sources Tools </description>
+      <guid>/post/r-webscape/</guid>
+      <description>R webscapewhy we would do webscraps?quickly get data from website that has multiple pagessome of the sites offering webscraping serviceshtttps://listly.iohtttps://webhose.io/htttps://scrapinghub.com/htttps://webscraping.comApproachThe approach of this tutorial is to learn by working with an example. So, different types of websites are presented that would be used to extract information. The type of website refers to the technology it uses.</description>
+    </item>
+    
+    <item>
+      <title>TidyTuesday: Palmer Penguins</title>
+      <link>/post/tidytuesday-palmer-penguins/</link>
+      <pubDate>Sun, 09 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/post/tidytuesday-palmer-penguins/</guid>
+      <description>TidyTuesday: Palmer PenguinsHow bill length (mm) varies by penguine species and sex?
+penguins.csv %&amp;gt;% ggplot() +geom_boxplot(aes(x = species,y = bill_length_mm,fill = sex))</description>
     </item>
     
   </channel>
