@@ -2,3 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
+.shp
+.prj
+.dbf
+.shx

@@ -1,0 +1,236 @@
+---
+title: "Bivariate Choropleth Plot using sf and ggplot package"
+author: Fahim Ahmed
+date: '2020-11-18'
+slug: bivariate-choropleth-plot-using-sf-and-ggplot-package
+categories:
+  - map
+  - choropleth
+tags:
+  - R
+  - ggplot2
+  - sf
+  - map
+  - choropleth
+draft: no
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include= FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      include=TRUE, 
+                      message=FALSE, 
+                      warning=FALSE)
+
+```
+
+## Goal
+
+The goal of this blogpost is to learn how to draw a bivariate map
+using "ggplot2" and "sf" package.
+
+I am very closely follwing the instruction from this [tutorial](https://www.trafforddatalab.io/recipes/gis/bivariate_choropleth.html)
+
+## A little about the dataset
+
+The example dataset contains  a list for the geophaphy of the United Kingdom (UK) at UTLA level and related attribute table. You can think the UTLA as a small geographic unit (i.e., region) in the UK. These geographic information are stored in the sf object.  In the attribute table, the covid rate (tested +ve per 1000 people) and population (%) by ethnicity is collected from the ONS database at each UTLA level. 
+
+
+## Question/Objective:
+
+The question related to the dataset is: *How the covid rate changes by ethnic population (%) at UTLA level? *
+
+So, the objective is to map, 
+
+- covid rate (x variable)
+- ethnic population (y variable)
+- at UTLA (geophaphic variable)
+
+One of the tools that can be used to answer the question is using a bivariate Choloropleth map.
+
+
+## Step-by-step procedure
+
+
+## Assumption
+
+We already created a dataset of type "list". This dataset contains a "sf" object for geographic information and a dataframe provides a attributes related to geography.
+
+1. Load Necessary Libaries and Datasets
+
+```{r}
+library(here)
+library(janitor) # tallying categorical variable
+library(cowplot)  # adding legend over the ggplot map
+library(tidyverse) # 
+library(sf) # read/write/wrangle geographic data
+library(classInt) # creating discrete intervals from continuous var
+library(biscale)
+library(pals) # color palette and color scale
+```
+
+
+```{r}
+df <- st_read(here("data_geography", "uk_utla_covid", "uk_utla_covid.shp"))
+```
+
+2. We want to add a $bi_class$ variable to the attribute dataset. The $bi\ class$ variable incorporates the change in $x$ variable and $y$ variable. We can create a $2x2$ or $3x3$ bivariate $bi class$ variables. Joshua Stevens [blog post](https://www.joshuastevens.net/cartography/make-a-bivariate-choropleth-map/) provides detail, step by step guide on bivariate plot.  The idea is that we want to divide the (continuous) values of $x$ variable into $2$ or $3$ segment. We will do the same division to the $y$ variable. For example, the varible $covid\ rate$classIntervals(df_clean$covid_rate, n=3, style="quantile") is divided into 3 parts using "quantile" division method. 
+
+```{r}
+classInt::classIntervals(df$covd_rt, n=3, style="quantile")
+```
+
+The three division quatiles values for covid rate are: 
+
+- $1:[6.205,16.08)$
+- $2:[16.08,27.22)$
+- $3:[27.22,60.46]$
+
+The $1,2,3$ here represent the classes for covid rate. A vizualization for the quantile division is presented below:
+
+```{r}
+pal1 <- c("wheat1", "red3")
+plot(classInt::classIntervals(df$covd_rt, n=3, style="quantile"), pal=pal1, main="Quantile")
+```
+
+Similary, the 3 divisions for the black population is below:
+```{r}
+classInt::classIntervals(df$black, n=3, style="quantile")
+```
+
+The three classes for the population of black ethnic group are:
+
+- 1: [0.09025,0.6808)
+- 2: [0.6808,2.802)
+- 3: [2.802,27.16] 
+
+
+```{r}
+plot(classInt::classIntervals(df$black, n=3, style="quantile"), pal=pal1, main="Quantile")
+```
+
+The following code creates the $bi\ class$ variable. It maps the x (=covid rate) division and y divisions (=black pop.) together.
+
+```{r}
+## A "df_clean" list is already created that contains a "sf" object and
+## a "dataframe"
+
+
+## Create a new column "bi_class" using x, y variable that
+## 3 by 3; quantile division of the variables
+
+data <-
+  bi_class(
+    df,     # <--- INPUT data set
+    x = covd_rt,  # <-- variable 1 INPUT
+    y = black,  # <-- variable 2 INPUT
+    style = 'quantile',
+    dim = 3
+    )
+
+
+```
+
+The first six observations of variable $covid\ rate$, $black\ population$, and newly created $bi\ class$ from the dataset is presented below:
+
+```{r, include=FALSE}
+data %>% dplyr::select(covd_rt, black, bi_class) %>% head()
+```
+
+The above table indicates that the values for first observation for covid rate and black poulation is $37.38$ and $0.185$, respectively. It indicates that the covid rate is between $3:[27.22,60.46]$ values and black population is between $[0.09025,0.6808)$ values.  These quantile bins were created previously.  Thus the bi class variable considers both values from both variable and assigns a class for each observation; the value for the first observation is $3-1$.
+
+Before diving into the map plotting, the number of UTLA regions associated with each $bi\ class$ variable are shown below. The nine classes are shown in y-axis and the number of UTLA regions associated with it are shown. The class 2-3 has the highest number of UTLA regions (=22). The class 1-2 and 3-1 both have equal number of regions (i.e., 21).
+
+```{r}
+data %>% 
+  tabyl(bi_class) %>%
+  ggplot()+
+  geom_col(aes(x = n,
+               y = bi_classgeometry), 
+           width = 0.3) +
+  scale_x_continuous(breaks = seq(0,25, by = 1)) +
+  theme_bw() +
+  labs(x = "Number of UTLA regions",
+       y = "Class Asssigned for COVID-19 rate and Black Pop. (%)")
+```
+
+In the next step, the $bi\ class$ variable is mapped using ggplot and sf package.  
+
+
+```{r}
+## Plotting
+map <- ggplot() +
+  geom_sf(
+    data = data,
+    mapping = aes(fill = bi_class),
+    color = "white",
+    size = 0.1,
+    show.legend = FALSE
+  ) +
+  bi_scale_fill(pal = "DkViolet", dim = 3) +
+  labs(title = "",
+       caption = "Source: 2011 Census | Sport England") +
+  coord_sf(crs = st_crs(4326), datum = NA) +
+  theme_void() +
+  theme(
+    plot.margin = unit(c(1, 1, 1, 1), "cm"),
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+    plot.caption = element_text(
+      size = 9,
+      color = "grey50",
+      hjust = 1,
+      margin = margin(t = 15)
+    )
+  )
+
+```
+
+In additon, the legend for bivariate is created separately for the map. 
+
+```{r}
+# create legend
+# options for color for bi_class mapping: pal	one of "Brown", "DkBlue", "DkCyan", "DkViolet", or "GrPink".
+
+legend <-
+  bi_legend(
+    pal = "DkViolet",
+    dim = 3,
+    xlab = "Higher covid rate",
+    ylab = "Higher black pop. (%)",
+    size = 8
+  )
+```
+
+In this step, the map and the legend are combined to develop the final map.
+
+```{r}
+
+## combine map and legend
+
+plot <- ggdraw() +
+  draw_plot(map, x = 0, y = 0, width = 1, height = 1, scale = 1) +
+  draw_plot(legend, x = 0.6, y = .6, width = 0.25, height = 0.25)
+```
+
+The final map is shown below:
+
+```{r}
+plot
+```
+
+
+<!-- ```{r} -->
+<!-- ## save the plot -->
+
+<!-- save_plot( -->
+<!--   "bivariate_choropleth.png", -->
+<!--   plot, -->
+<!--   base_height = 8, -->
+<!--   base_aspect_ratio = 1.8 -->
+<!-- ) -->
+<!-- ``` -->
+
+
+
+
