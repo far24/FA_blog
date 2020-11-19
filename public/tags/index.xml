@@ -54,33 +54,6 @@
     </item>
     
     <item>
-      <title>resources</title>
-      <link>/tags/resources/</link>
-      <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/resources/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>sports</title>
-      <link>/tags/sports/</link>
-      <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/sports/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>sports analytics</title>
-      <link>/tags/sports-analytics/</link>
-      <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/sports-analytics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>httr</title>
       <link>/tags/httr/</link>
       <pubDate>Thu, 13 Aug 2020 00:00:00 +0000</pubDate>
