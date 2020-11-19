@@ -1,75 +1,93 @@
 baseURL = "/"
-languageCode = "en-us"
-title = "Fahim Ahmed"
-theme = "hugo-theme-cactus"
-copyright = "@FA" # cactus will use title if copyright is not set
-disqusShortname = "example" # Used when comments is enabled. Cactus will use site title if not set
-# googleAnalytics = "UA-1234-5"
+anguageCode = "en-us"
+title = "FA Blog"
+theme = "minimal-bootstrap"
 
-ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
+[taxonomies]
+  tag = "tags"
 
-# summaryLength = 2
-
-# Main menu which appears below site header.
-[[menu.main]]
-name = "Home"
-url = "/"
-weight = 1
-
-[[menu.main]]
-name = "Articles"
-url = "/posts"
-weight = 2
-
-[[menu.main]]
-name = "Tags"
-url = "/tags"
-weight = 3
-
-[[menu.main]]
-name = "About"
-url = "/about"
-weight = 4
-
-[markup]
-  [markup.tableOfContents]
-    endLevel = 4
-    ordered = false
-    startLevel = 2
+[permalinks]
+  post = "/:filename/"
 
 [params]
+  description = "Some description"
+  contentBackgroundColor = "#fff"
+  contentTextColor = "#212529"
+  contentLinkColor = "#007bff"
+  contentLinkHoverColor = "#0056b3"
+  navbarBackgroundColor = "#212529"
+  navbarLinkColor = "rgba(255, 255, 255, 0.75)"
+  navbarLinkHoverColor = "rgba(255, 255, 255, 1)"
+  wrapperMaxWidth = "800px"
+  customDateFormat = "Jan 2, 2006"
+  customCodeStyle = true
+  customBlockquoteStyle = true
+  showPostSummary = false
+  googleAnalytics = "UA-123456789-1"
+  cookieConsent = true
+  includeBootstrapJs = false
+  faviconSafariPinnedTabColor = "#5bbad5"
+  faviconMsApplicationTileColor = "#da532c"
+  faviconThemeColor = "#ffffff"
 
-  colortheme = "white" # dark, light, white, or classic
-  rss = true # generate rss feed. default value is false
-  googleAnalyticsAsync = true # use asynchronous tracking. Synchronous tracking by default
+[menu]
+  [[menu.nav]]
+  name = "Posts"
+  url = "/"
+  weight = 1
+  
+  [[menu.nav]]
+  name = "Tags"
+  url = "/tags/"
+  weight = 2
+  
+  [[menu.nav]]
+  name = "About"
+  url = "/about/"
+  weight = 3
+  
+  [[menu.nav]]
+  name = "RSS"
+  url = "/index.xml"
+  weight = 4
+  
+  [[menu.nav]]
+  name = "RSS"
+  url = "/index.xml"
+  weight = 4
+  
+  
 
-  # Home page settings
-  description = "Gateway of my exploration of data."
-  mainSection = "posts" # your main section
-  showAllPostsOnHomePage = false # default
-  postsOnHomePage = 5 # this option will be ignored if showAllPostsOnHomePage is set to true
-  tagsOverview = true # show tags overview by default.
-  showProjectsList = false# show projects list by default (if projects data file exists).
-  projectsUrl = "https://github.com/far24" # title link for projects list
-
-  # https://gohugo.io/functions/format/#hugo-date-and-time-templating-reference
-  dateFormat = "2006-01-02" # default
-
-  # Post page settings
-  show_updated = false # default
-
-  [params.comments]
-    enabled = false # default
-    engine = "disqus" # more supported engines will be added.
-
-  # the value of name should be an valid font awesome icon name (brands type)
-  # https://fontawesome.com/icons?d=gallery&s=brands
-  [[params.social]]
-    name = "github"
-    link = "https://github.com/far24"
-  [[params.social]]
-    name = "linkedin"
-    link = "https://www.linkedin.com/company/github/"
-  [[params.social]]
-    name = "email"
-    link = "example@example.com"  # no need for "mailto:" in the head
+[markup]
+  defaultMarkdownHandler = "goldmark"
+  [markup.goldmark]
+    [markup.goldmark.extensions]
+      definitionList = true
+      footnote = true
+      linkify = true
+      strikethrough = true
+      table = true
+      taskList = true
+      typographer = true
+    [markup.goldmark.parser]
+      attribute = true
+      autoHeadingID = true
+    [markup.goldmark.renderer]
+      hardWraps = false
+      unsafe = true
+      xHTML = false
+  [markup.highlight]
+    codeFences = true
+    hl_Lines = ""
+    lineNoStart = 1
+    lineNos = false
+    lineNumbersInTable = true
+    noClasses = true
+    style = "monokai"
+    tabWidth = 4
+  [markup.tableOfContents]
+    endLevel = 6
+    startLevel = 2
+    
+    
+    ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]

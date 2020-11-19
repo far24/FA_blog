@@ -1,0 +1,230 @@
+---
+title: 'R webscape '
+author: Fahim Ahmed
+date: '2020-08-13'
+slug: r-webscape
+categories:
+  - R
+  - data collection
+  - webscape
+tags:
+  - R
+  - rvest
+  - httr
+  - xml2
+editor_options: 
+  chunk_output_type: console
+---
+
+# R webscape
+
+### why we would do webscraps?
+
++ quickly get data from website that has multiple pages
+
+### some of the sites offering webscraping services
+
++ htttps://listly.io
++ htttps://webhose.io/
++ htttps://scrapinghub.com/
++ htttps://webscraping.com
+
+## Approach
+
+The approach of this tutorial is to learn by working with an example. So, different types of websites are presented that would be used to extract information.  The type of website refers to the technology it uses. For example, **html+css only**, **html+css+javascript**, **interaction with a website** to get the data etc.
+
+
+## Assumption
+
+A few assumption is made while you follow along the tutorial:
+
++ you know basics of HTML code
++ you know basics of XML code
++ you know how to use Google Chrome Developer
+
+## R packages used for webscraping
+
++ rvest
++ xml
+
+
+## Websites to scrap
++ [Premier League Standing]("https://www.skysports.com/premier-league-table/2019")
+
+
+
+## Step-by-Step actions
+
+```{r}
+knitr::opts_chunk$set(warning = FALSE,
+                      message = FALSE)
+```
+
+### Load Libraries
+
+We are using the "rvest" and  "xml2" package to scrape the website. For data wrangling, the "dplyr" package will be used.
+
+```{r load packages}
+library(rvest) # reading websites
+library(dplyr) # for data wrangling
+library(xml2) # 
+library(ggplot2)  # for plotting
+```
+
+### Parse the Website
+
+In this example the English Premier Legue (EPL) table for standing in different seasons are recorded in HTML Table. First, the webpage address (URL) is noted and then it is passed into the read_html function from the xml2 package.
+
+```{r}
+# get the page address
+wbpage <- "https://www.skysports.com/premier-league-table/2016"
+
+# read the html page
+wbpage_read_html <- xml2::read_html(wbpage)
+
+```
+
+Now, we need to find where is the table located in the webpage and how to select it using html tag or css properties.  Use the developer tool in chrome (or any other browser) 
+
+
+```{r}
+untidy_data <-
+  wbpage_read_html %>% 
+  # select node 'div' from html document
+  rvest::html_nodes('div') %>% 
+  # find <td> that contains the class = "standing-table_cell"
+  xml2::xml_find_all("//td[contains(@class,'standing-table__cell')]") %>% 
+  # extract the text for the scraped table
+  rvest::html_text()
+
+# check what is scraped so far
+head(untidy_data)
+```
+
+Looking at the untidy data set (it's a vector), it seems we have all the values but not usable for further exploration. Next, this untidy vector data is transformed into a tidy data. Every 11 elements in the vector corresponds to one team. So, for 20 teams in the EPL, we have 11*20=220 elements in the vector. The vector dataset is splitted after every 11th position to make the new dataset. In addition, it is transformed into a dataframe with columns names. To sanitize the table, datatypes are indicated using hablar package and every string is trimmed for whitespace.
+
+```{r}
+# divide the vector into 11 columns and 20 rows
+table_dt <- cbind.data.frame(split(untidy_data, rep(1:11)), stringsAsFactors=F)[1:10]
+
+# add column names
+column_names <- c("rank", "team_name", "played", "win", "draw", "lost", "scored", "conceded", "goal_diff", "points")
+
+colnames(table_dt) <- column_names
+
+# indicate data types, trim whitespace, add season column
+table_dt <- 
+  table_dt %>%
+  # transform to simple classes: date, numeric, and character
+  hablar::retype() %>%
+  mutate(across(where(is.character), stringr::str_trim)) %>% 
+  mutate(season = 2019)
+
+head(table_dt)
+```
+
+Now, that a fantastic looking table!!
+
+
+This webscraping could have done manually. Anyone can just copy and paste it. The beauty of using a programming language is that, we can use it to scrape multiple pages. This tutorial will introduce that too. 
+
+The procedure to scrape other seasons as follows:
+
+  + loop through the webpages for different years
+  + parsing the webpages to get texts (as vector data)
+  + tranform vector data to dataframe with teams information as observations for each season
+  
+
+```{r}
+get_webpage <- function(page_address) {
+    untidy_data <-
+      read_html(page_address) %>% # read html
+      rvest::html_nodes('tbody') %>% # node extraction
+      xml2::xml_find_all("//td[contains(@class,'standing-table__cell')]") %>% # manual entry
+      rvest::html_text()
+    
+    table_dt <- cbind.data.frame(split(untidy_data, rep(1:11)),
+                                 stringsAsFactors = F)[1:10]
+    return(table_dt)
+  
+}
+```
+
+
+```{r}
+# function::get_epl_data(seasons)
+# This function takes seasons as input
+# outputs a table for dataframe 
+
+get_epl_data <- function(seasons, result_df) {
+  for (i in seq(1,length(seasons))) {
+    year = seasons[i]
+    print(year)
+    
+    # get webpage address
+    wbpage <- paste0("https://www.skysports.com/premier-league-table/", year)
+    print(wbpage)
+    
+    untidy_dt <- get_webpage(wbpage)
+    
+    # tranform vector to dataframe
+    table_dt <-
+      untidy_dt %>%
+      hablar::retype() %>%
+      mutate(across(where(is.character), stringr::str_trim)) %>%
+      mutate(season = year)
+  
+    result_df <- rbind(result_df, table_dt)  
+  
+  } # end for loop for years in seasons
+  return(result_df)
+} # end function
+    
+
+```
+
+Let's scrape the epl table from the website from 2015 to 2019 using the "get_epl_data" function.
+
+```{r}
+# create an empty dataframe save the results
+dt <- data.frame()
+dt <- get_epl_data(seasons = c(2015:2019), result_df = dt)
+
+# change the column names for further use 
+column_names <- c("rank", "team_name","played", "win", "draw","lost",
+                      "scored", "conceded", "goal_diff", "points", "season"
+                      )
+colnames(dt) <- column_names
+
+head(dt)
+
+```
+
+Now, let's use this dataset to plot the ranking of the teams from 2015 and 2019.  The "Bump" chart would show us how teams ranking in the table changed over the last five years.
+
+
+```{r}
+dt %>% 
+  filter(rank <= 6) %>%
+  ggplot(
+    aes(x = season, y = rank, group = team_name)) + theme_bw() +
+      geom_line(aes(
+        color = team_name,
+        alpha = 1
+      ),
+      size = 2) +
+      geom_point(aes(
+        color = team_name,
+        alpha = 1
+      ),
+      size = 4) +
+      scale_x_continuous(breaks = c(2015:2019),
+                         expand = c(0.85, 0)) +
+      scale_y_reverse(breaks = 1:20) +
+      labs(x = "season",
+           y = "rank",
+           title = "Top 6 EPL Teams: 2015 - 2019")
+    
+```
+
+ 
