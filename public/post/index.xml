@@ -5,7 +5,21 @@
     <link>/post/</link>
     <description>Recent content in Posts on FA Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 18 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 09 Jan 2021 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>TT01:  Transit Cost Projects</title>
+      <link>/2021-01-09-tt01-transit-cost-projects/</link>
+      <pubDate>Sat, 09 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/2021-01-09-tt01-transit-cost-projects/</guid>
+      <description>This week’s tidytuesday dataset explores the cost of transit projects for different countries of the world. The data is downloaded from the github repository.
+# read in the data manuallytransit_cost &amp;lt;- readr::read_csv(&amp;#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-05/transit_cost.csv&amp;#39;)Let’s look at the cost of transit projects in Japan (JP) and United States (US). Both of these countries are categorized as developed countries, but are located in different continent. The data vizualization is focused on answering, “How the transit projects’ costs differ in two developed countries (JP vs US) of the world?</description>
+    </item>
+    
     <item>
       <title>Bivariate Choropleth Plot using sf and ggplot package</title>
       <link>/2020-11-18-bivariate-choropleth-plot-using-sf-and-ggplot-package/</link>
@@ -15,15 +29,6 @@
       <description>GoalThe goal of this blogpost is to learn how to draw a bivariate mapusing “ggplot2” and “sf” package.
 I am very closely follwing the instruction from this tutorial
 A little about the datasetThe example dataset contains a list for the geophaphy of the United Kingdom (UK) at UTLA level and related attribute table. You can think the UTLA as a small geographic unit (i.e., region) in the UK.</description>
-    </item>
-    
-    <item>
-      <title>Soccer Analytics Resources</title>
-      <link>/2020-09-09-soccer-analytics-resources/</link>
-      <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/2020-09-09-soccer-analytics-resources/</guid>
-      <description>People to follow Data Sources Tools </description>
     </item>
     
     <item>

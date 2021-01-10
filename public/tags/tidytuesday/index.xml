@@ -5,7 +5,21 @@
     <link>/tags/tidytuesday/</link>
     <description>Recent content in tidytuesday on FA Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Sun, 09 Aug 2020 00:00:00 +0000</lastBuildDate><atom:link href="/tags/tidytuesday/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 09 Jan 2021 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/tidytuesday/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>TT01:  Transit Cost Projects</title>
+      <link>/2021-01-09-tt01-transit-cost-projects/</link>
+      <pubDate>Sat, 09 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/2021-01-09-tt01-transit-cost-projects/</guid>
+      <description>This week’s tidytuesday dataset explores the cost of transit projects for different countries of the world. The data is downloaded from the github repository.
+# read in the data manuallytransit_cost &amp;lt;- readr::read_csv(&amp;#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-05/transit_cost.csv&amp;#39;)Let’s look at the cost of transit projects in Japan (JP) and United States (US). Both of these countries are categorized as developed countries, but are located in different continent. The data vizualization is focused on answering, “How the transit projects’ costs differ in two developed countries (JP vs US) of the world?</description>
+    </item>
+    
     <item>
       <title>TidyTuesday: Palmer Penguins</title>
       <link>/2020-08-09-tidytuesday-palmer-penguins/</link>

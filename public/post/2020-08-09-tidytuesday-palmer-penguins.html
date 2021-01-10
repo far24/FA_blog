@@ -1,0 +1,27 @@
+---
+title: 'TidyTuesday: Palmer Penguins'
+author: "Fahim Ahmed"
+date: '2020-08-09'
+draft: no
+slug: tidytuesday-palmer-penguins
+tags:
+- R
+- tidytuesday
+categories:
+- R
+- ggplot2
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="tidytuesday-palmer-penguins" class="section level1">
+<h1>TidyTuesday: Palmer Penguins</h1>
+<p>How bill length (mm) varies by penguine species and sex?</p>
+<pre class="r"><code>penguins.csv %&gt;% 
+  ggplot() +
+  geom_boxplot(aes(x = species,
+                   y = bill_length_mm,
+                   fill = sex))</code></pre>
+<p><img src="public/post/2020-08-09-tidytuesday-palmer-penguins_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>

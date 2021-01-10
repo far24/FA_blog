@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>ggplot2 on FA Blog</title>
-    <link>/tags/ggplot2/</link>
-    <description>Recent content in ggplot2 on FA Blog</description>
+    <title>visualization on FA Blog</title>
+    <link>/tags/visualization/</link>
+    <description>Recent content in visualization on FA Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Sat, 09 Jan 2021 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="/tags/ggplot2/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="/tags/visualization/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -18,17 +18,6 @@
       <guid>/2021-01-09-tt01-transit-cost-projects/</guid>
       <description>This week’s tidytuesday dataset explores the cost of transit projects for different countries of the world. The data is downloaded from the github repository.
 # read in the data manuallytransit_cost &amp;lt;- readr::read_csv(&amp;#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-05/transit_cost.csv&amp;#39;)Let’s look at the cost of transit projects in Japan (JP) and United States (US). Both of these countries are categorized as developed countries, but are located in different continent. The data vizualization is focused on answering, “How the transit projects’ costs differ in two developed countries (JP vs US) of the world?</description>
-    </item>
-    
-    <item>
-      <title>Bivariate Choropleth Plot using sf and ggplot package</title>
-      <link>/2020-11-18-bivariate-choropleth-plot-using-sf-and-ggplot-package/</link>
-      <pubDate>Wed, 18 Nov 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/2020-11-18-bivariate-choropleth-plot-using-sf-and-ggplot-package/</guid>
-      <description>GoalThe goal of this blogpost is to learn how to draw a bivariate mapusing “ggplot2” and “sf” package.
-I am very closely follwing the instruction from this tutorial
-A little about the datasetThe example dataset contains a list for the geophaphy of the United Kingdom (UK) at UTLA level and related attribute table. You can think the UTLA as a small geographic unit (i.e., region) in the UK.</description>
     </item>
     
   </channel>

@@ -1,0 +1,157 @@
+---
+title: 'TT01:  Transit Cost Projects'
+author: ''
+date: '2021-01-09'
+slug: tt01-transit-cost-projects
+categories:
+  - tidytuesday
+tags:
+  - R
+  - visualization
+  - ggplot2
+  - tidytuesday
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include= FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      include=FALSE, 
+                      message=FALSE, 
+                      warning=FALSE)
+
+```
+
+```{r}
+# load packages
+library(naniar)
+library(ggplot2)
+library(tidyverse)
+```
+
+
+This week's tidytuesday dataset explores the cost of transit projects for different countries of the world. The data is downloaded from the github repository.
+
+```{r include=TRUE}
+# read in the data manually
+
+transit_cost <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-05/transit_cost.csv')
+
+
+
+```
+
+Let's look at the cost of transit projects in Japan (JP) and United States (US). Both of these countries are categorized as developed countries, but are located in different continent.  The data vizualization is focused on answering, **"How the transit projects' costs differ in two developed countries (JP vs US) of the world?"**
+
+
+```{r}
+transit_cost$start_year <- as.numeric(transit_cost$start_year)
+transit_cost$end_year <- as.numeric(transit_cost$end_year)
+transit_cost$rr <- as.factor(transit_cost$rr)
+```
+ 
+
+```{r include=TRUE}
+# transit projects of us and japan
+
+us_jp <- transit_cost %>% 
+  filter(country %in% c("JP", "US"))  %>%
+  mutate(railroad = ifelse(rr == 1, "RailRoad", "Not_RailRoad")) %>% 
+  group_by(country) %>% 
+  mutate(avg_cost_per_km = mean(cost_km_millions))
+
+```
+
+```{r}
+# copied from Rpubs 
+#Define gppr_theme() function
+
+theme_gppr <- function(){ 
+    font <- "Georgia"   #assign font family up front
+    
+    theme_bw() %+replace%    #replace elements we want to change
+    
+    theme(
+      
+      #grid elements
+      #panel.grid.major = element_blank(),    #strip major gridlines
+      panel.grid.minor = element_blank(),
+      axis.ticks = element_blank(),          #strip axis ticks
+      
+      #since theme_minimal() already strips axis lines, 
+      #we don't need to do that again
+      
+      #text elements
+      plot.title = element_text(             #title
+                   family = font,            #set font family
+                   size = 14,                #set font size
+                   face = 'bold',            #bold typeface
+                   hjust = 0,                #left align
+                   vjust = 2),               #raise slightly
+      
+      plot.subtitle = element_text(          #subtitle
+                   family = font,            #font family
+                   size = 14),               #font size
+      
+      plot.caption = element_text(           #caption
+                   family = font,            #font family
+                   size = 9,                 #font size
+                   hjust = 1),               #right align
+      
+      axis.title = element_text(             #axis titles
+                   family = font,            #font family
+                   size = 10),               #font size
+      
+      axis.text = element_text(              #axis text
+                   family = font,            #axis famuly
+                   size = 9),                #font size
+      
+      axis.text.x = element_text(            #margin for axis text
+                    margin=margin(5, b = 10))
+      
+      #since the legend often requires manual tweaking 
+      #based on plot content, don't define it here
+    )
+}
+```
+
+Both countries have almost similar number of projects (JP:15 vs. US: 13) in the dataset.  To compare the cost of transit projects, the "cost per kilometer" variable is chosen.  The cost per kilometer of each project is plotted against the start year of the project.  Also, whether the transit project was a railroad or not is included in the plot.
+
+
+```{r include=TRUE}
+us_jp %>%  ggplot() +
+  # scatter plot of year vs cost per kilometer
+  geom_point(
+    aes(
+      x = start_year,
+      y = cost_km_millions,
+      color = country
+    ),
+    size = 6
+  ) +
+  # adding name of the project for each data point
+  geom_text(
+    aes(x=start_year, y = cost_km_millions, label = line),
+    nudge_x = 1,
+    nudge_y = 2,
+    angle = 90,
+    check_overlap = T
+  ) +
+  # scaling x and y axis to accomodate the texts from names of projects
+  scale_y_continuous(limit = c(0, 4500), expand = c(0 , 1000, 0, 500),  breaks = seq(0, 4500, by = 500), labels = scales::dollar_format()) +
+  scale_x_continuous(limit = c(1985, 2025),
+                     breaks = seq(1985, 2025, by = 5)) +
+  # facetting the data for whether the project is railroad or not
+  facet_wrap(vars(railroad)) +
+  labs(
+    title = "Comparison of transit projects' cost (per kilometer in USD) between Japan and USA",
+    x = "Transit Project Start Year",
+    y = "Cost per kilometer (USD)",
+    color = "Country",
+    shape = "Railroad Project?",
+    caption = "Data Source: TidyTuesday 2021"
+  ) + theme_gppr()
+```
+
+From the figure, it is quiet clear that Japan had more railroad transit projects than US.  Also, the average cost of the transit projects for Japan is lower that US.  The "East Side Access" railroad transit project was the cosliest one for US.  The transit projects of Japan started much earlier than US. Note that, this insights is only from using this particular dataset, and may not be generalized.
