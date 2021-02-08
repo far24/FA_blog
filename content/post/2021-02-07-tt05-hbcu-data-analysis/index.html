@@ -1,0 +1,28 @@
+---
+title: 'TT05: HBCU Data Analysis'
+author: FA
+date: '2021-02-07'
+slug: tt05-hbcu-data-analysis
+categories:
+  - tidytuesday
+  - '2021'
+tags:
+  - ggplot2
+  - visualization
+publishdate: '2021-02-07'
+lastmod: '2021-02-07'
+draft: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+<script src="index_files/header-attrs/header-attrs.js"></script>
+
+
+<p>This week’s tidytuesday dataset explores the historically black college university enrollment trend. My attempt is to compare enrollment in public vs private school.</p>
+<p>The focus would be to learn new packages/new functions. I am following <a href="https://twitter.com/toeb18/status/1358062456048910338/photo/1">Tobias Stalder</a> example for this week. I would like to learn the <strong>ggtext</strong> functions following his vizualization.</p>
+<pre class="r"><code># read in the data manually
+# Or read in the data manually
+
+hbcu_all &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-02/hbcu_all.csv&#39;) %&gt;% clean_names()</code></pre>
+<p>Let us look at data after the year 1990 to 2015.</p>
