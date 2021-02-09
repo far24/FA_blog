@@ -1,0 +1,40 @@
+---
+title: 'TT05: Plastic Pollution'
+author: FA
+date: '2021-01-26'
+slug: tt05-plastic-pollution
+categories:
+  - tidytuesday
+tags:
+  - ggplot2
+  - R
+  - visualization
+publishdate: '2021-01-26'
+lastmod: '2021-01-26'
+draft: yes
+---
+
+
+```{r setup, include= FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      include=FALSE, 
+                      message=FALSE, 
+                      warning=FALSE)
+
+```
+
+```{r}
+# load packages
+library(naniar)
+library(ggplot2)
+library(tidyverse)
+```
+
+
+This week 05 of rtidytuesday exploration.  This week's data is focused on "Plastic Pollution" Exploration.
+
+```{r include=TRUE}
+# Or read in the data manually
+
+plastics <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-26/plastics.csv')
+```
