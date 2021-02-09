@@ -1,0 +1,53 @@
+---
+title: 'TT02:  Tate Art Museum (Jan 2021)'
+author: Fahim Ahmed
+date: '2021-01-17'
+slug: tt02-tate-art-museum-jan-2021
+categories:
+  - tidytuesday
+tags:
+  - R
+  - visualization
+  - ggplot2
+publishdate: '2021-01-17'
+lastmod: '2021-01-17'
+draft: yes
+---
+
+<script src="index_files/header-attrs/header-attrs.js"></script>
+
+
+<pre class="r"><code># download data for artwork
+artwork &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-01-12/artwork.csv&#39;)</code></pre>
+<pre><code>## 
+## -- Column specification --------------------------------------------------------
+## cols(
+##   .default = col_character(),
+##   id = col_double(),
+##   artistId = col_double(),
+##   year = col_double(),
+##   acquisitionYear = col_double(),
+##   width = col_double(),
+##   height = col_double(),
+##   depth = col_double(),
+##   thumbnailCopyright = col_logical()
+## )
+## i Use `spec()` for the full column specifications.</code></pre>
+<pre class="r"><code># download data for artists
+artists &lt;- readr::read_csv(&quot;https://github.com/tategallery/collection/raw/master/artist_data.csv&quot;)</code></pre>
+<pre><code>## 
+## -- Column specification --------------------------------------------------------
+## cols(
+##   id = col_double(),
+##   name = col_character(),
+##   gender = col_character(),
+##   dates = col_character(),
+##   yearOfBirth = col_double(),
+##   yearOfDeath = col_double(),
+##   placeOfBirth = col_character(),
+##   placeOfDeath = col_character(),
+##   url = col_character()
+## )</code></pre>
+<div id="potential-questions" class="section level2">
+<h2>Potential Questions:</h2>
+</div>

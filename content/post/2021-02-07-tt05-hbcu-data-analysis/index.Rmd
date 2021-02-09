@@ -55,7 +55,7 @@ Let us look at data after the year 1990 to 2015.
 
 
 
-```{r}
+```{r include=TRUE}
 
 hbcu_all %>% 
   filter(year >= 1990) %>% 
@@ -81,7 +81,7 @@ diff <- dat_school_cat %>%
 ```
 
 
-```{r}
+```{r include=TRUE}
 dat_school_cat %>%
   group_by(schl_cat) %>%
   summarise(mean = mean(enrollments),
@@ -102,7 +102,7 @@ stats_private <- stats %>%
 
 
 
-```{r}
+```{r include=TRUE}
 
 ggplot(dat_school_cat) +
   # 1-se plot for public

@@ -26,3 +26,151 @@ editor_options:
 
 hbcu_all &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-02-02/hbcu_all.csv&#39;) %&gt;% clean_names()</code></pre>
 <p>Let us look at data after the year 1990 to 2015.</p>
+<pre class="r"><code>hbcu_all %&gt;% 
+  filter(year &gt;= 1990) %&gt;% 
+  mutate(total_private = total_private/1000,
+         total_public = total_public/1000) %&gt;% 
+  select(year, total_private, total_public) %&gt;% 
+  mutate(diff = total_public - total_private) %&gt;%
+  pivot_longer(cols = c(total_private, total_public)) %&gt;% 
+  rename(schl_cat = name,
+         enrollments = value)-&gt; dat_school_cat
+
+
+public &lt;- dat_school_cat %&gt;%
+  filter(schl_cat == &quot;total_public&quot;)
+
+private &lt;- dat_school_cat %&gt;%
+  filter(schl_cat == &quot;total_private&quot;)
+
+diff &lt;- dat_school_cat %&gt;%
+  filter(schl_cat == &quot;total_private&quot;) %&gt;%
+  mutate(x_pos = enrollments + (diff/2))</code></pre>
+<pre class="r"><code>dat_school_cat %&gt;%
+  group_by(schl_cat) %&gt;%
+  summarise(mean = mean(enrollments),
+            SE = sd(enrollments)) %&gt;%
+  mutate(meanpos = mean + 1 *SE,
+         meanneg = mean - 1 *SE)-&gt; stats
+
+
+
+stats_public &lt;- stats %&gt;%
+  filter(schl_cat == &quot;total_public&quot;)
+
+stats_private &lt;- stats %&gt;%
+  filter(schl_cat == &quot;total_private&quot;)</code></pre>
+<pre class="r"><code>ggplot(dat_school_cat) +
+  # 1-se plot for public
+  geom_rect(
+    xmin = stats_public$meanneg,
+    xmax = stats_public$meanpos,
+    ymin = 2016,
+    ymax = 1989,
+    fill = &quot;#762a83&quot;,
+    alpha = .005
+  ) +
+  # mean line for public
+  geom_vline(
+    xintercept = stats_public$mean,
+    linetype = &quot;solid&quot;,
+    size = .5,
+    alpha = .8,
+    color = &quot;#762a83&quot;
+  ) +
+  geom_rect(
+    xmin = stats_private$meanneg,
+    xmax = stats_private$meanpos,
+    ymin = 2016,
+    ymax = 1989,
+    fill = &quot;#009688&quot;,
+    alpha = .005
+  ) +
+  geom_vline(
+    xintercept = stats_private$mean,
+    linetype = &quot;solid&quot;,
+    size = .5,
+    alpha = .8,
+    color = &quot;#762a83&quot;
+  )+
+  # points plot
+  geom_point(
+    aes(x = enrollments, y = year, color = schl_cat),
+    size = 4,
+    show.legend = FALSE
+  ) +
+  scale_color_manual(values = c(&quot;#009688&quot;, &quot;#762a83&quot;)) +
+  
+  geom_vline(
+    xintercept = stats_private$mean,
+    color = &quot;#009688&quot;,
+    linetype = &quot;solid&quot;,
+    size = .5,
+    alpha = .8
+  )+
+  geom_segment(
+    data = private,
+    aes(
+      x = enrollments,
+      y = year,
+      yend = public$year,
+      xend = public$enrollments
+    ),
+    color = &quot;#aeb6bf&quot;,
+    size = 4.5,
+    alpha = .5
+  ) +
+  geom_text(
+    data = diff,
+    aes(
+      label = paste(&quot;∆&quot;, diff),
+      x = x_pos,
+      y = year
+    ),
+    color = &quot;#4a4e4d&quot;,
+    size = 2.5)+
+  geom_text(
+    x = stats_public$mean ,
+    y = 1990,
+    label = &quot;MEAN&quot;,
+    angle = 90,
+    size = 2.5,
+    color = &quot;#009688&quot;
+  ) +
+  geom_text(
+    x = stats_public$meanpos ,
+    y = 1990,
+    label = &quot;STDEV&quot;,
+    angle = 90,
+    size = 2.5,
+    color = &quot;#009688&quot;
+  ) +
+  scale_y_continuous(breaks = seq(1990,2015,1))+
+  xlab(&quot;Enrollments&quot;) +
+  ggtitle(&quot;Enrollment Trends at Historically Black Colleges and Universities&quot;) +
+  labs(subtitle = &quot;Total &lt;span style = &#39;color: #009688;&#39;&gt;**Private**&lt;/span&gt; vs. &lt;span style = &#39;color: #762a83;&#39;&gt; **Public**&lt;/span&gt; Enrollment&quot;,
+       caption = &quot;FA | ahmedf.netlify.app| data.world/nces |&quot; )+
+
+  theme_minimal() +
+  theme(
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
+    # panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    axis.title.y = element_blank(),
+    # axis.text.y = element_blank(),
+    # axis.ticks.y = element_blank(),
+    # axis.ticks.x = element_line(color = &quot;#4a4e4d&quot;),
+    # text = element_text(color = &quot;#4a4e4d&quot;),
+    # strip.text.y.left  = element_text(angle = 0),
+    # panel.background = element_rect(fill = &quot;white&quot;, color = &quot;white&quot;),
+    # strip.background = element_rect(fill = &quot;white&quot;, color = &quot;white&quot;),
+    # strip.text = element_text(color = &quot;#4a4e4d&quot;),
+    # plot.background = element_rect(fill = &quot;white&quot;),
+    # panel.spacing = unit(0, &quot;lines&quot;),
+    # plot.margin = margin(1, 1, .5, 1, &quot;cm&quot;),
+    # plot.caption = element_markdown(hjust = 0, lineheight = 1.5),
+    plot.subtitle = element_markdown(size = 14),
+    # plot.title = element_text(size = 16, hjust = -.8)
+  ) </code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
